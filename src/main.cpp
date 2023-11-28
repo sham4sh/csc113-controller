@@ -14,11 +14,14 @@ const char* mqtt_server = "test.mosquitto.org";
 #define MQTT_SERIAL_PUBLISH_CH "csc113/serialdata/tx"
 #define MQTT_SERIAL_SUBSCRIBE_CH "csc113/serialdata/tx"
 
+#define MQTT_VELOCITY "csc113/controller/vel"
+#define MQTT_STEER "csc113/controller/st"
+
 #define VRX_PIN  36 // ESP32 pin GPIO36 (ADC0) connected to VRX pin
 #define VRY_PIN  39 // ESP32 pin GPIO39 (ADC0) connected to VRY pin
 
-int valueX = 0; // to store the X-axis value
-int valueY = 0; // to store the Y-axis value
+String valueX = ""; // to store the X-axis value
+String valueY = ""; // to store the Y-axis value
 
 WiFiClient wifiClient;
 
@@ -56,6 +59,8 @@ void reconnect() {
       Serial.println("connected");
       // subscribe
       client.subscribe(MQTT_SERIAL_SUBSCRIBE_CH);
+      client.subscribe(MQTT_VELOCITY);
+      client.subscribe(MQTT_STEER);
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -95,15 +100,23 @@ void publishSerialData(const char *serialData){
 }
 void loop() {
   client.loop();
+
+
+  valueX = std::to_string(analogRead(VRX_PIN));
+  valueY = analogRead(VRY_PIN);
+
+
   if (Serial.available())
   {
     String str = Serial.readStringUntil('\n');
     publishSerialData(str.c_str());
+
+    client.publish(MQTT_STEER, valueX.c_str());
+    client.publish(MQTT_VELOCITY, valueY.c_str());
   }
 
    // read X and Y analog values
-  valueX = analogRead(VRX_PIN);
-  valueY = analogRead(VRY_PIN);
+  
 
   // print data to 
   /**
