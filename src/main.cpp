@@ -102,7 +102,7 @@ void loop() {
   client.loop();
 
 
-  valueX = std::to_string(analogRead(VRX_PIN));
+  valueX = analogRead(VRX_PIN);
   valueY = analogRead(VRY_PIN);
 
 
