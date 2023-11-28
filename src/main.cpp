@@ -29,7 +29,7 @@ PubSubClient client(wifiClient);
 
 void setup_wifi() {
     delay(10);
-    // We start by connecting to a WiFi network
+    // We start by connecting to a WiFi network // Test commit
     Serial.println();
     Serial.print("Connecting to ");
     Serial.println(ssid);
