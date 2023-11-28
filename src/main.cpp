@@ -14,6 +14,12 @@ const char* mqtt_server = "test.mosquitto.org";
 #define MQTT_SERIAL_PUBLISH_CH "csc113/serialdata/tx"
 #define MQTT_SERIAL_SUBSCRIBE_CH "csc113/serialdata/tx"
 
+#define VRX_PIN  36 // ESP32 pin GPIO36 (ADC0) connected to VRX pin
+#define VRY_PIN  39 // ESP32 pin GPIO39 (ADC0) connected to VRY pin
+
+int valueX = 0; // to store the X-axis value
+int valueY = 0; // to store the Y-axis value
+
 WiFiClient wifiClient;
 
 PubSubClient client(wifiClient);
@@ -88,10 +94,22 @@ void publishSerialData(const char *serialData){
   client.publish(MQTT_SERIAL_PUBLISH_CH, serialData);
 }
 void loop() {
-   client.loop();
-   if (Serial.available())
-   {
-     String str = Serial.readStringUntil('\n');
-     publishSerialData(str.c_str());
-   }
+  client.loop();
+  if (Serial.available())
+  {
+    String str = Serial.readStringUntil('\n');
+    publishSerialData(str.c_str());
+  }
+
+   // read X and Y analog values
+  valueX = analogRead(VRX_PIN);
+  valueY = analogRead(VRY_PIN);
+
+  // print data to 
+  /**
+  Serial.print("x = ");
+  Serial.print(valueX);
+  Serial.print(", y = ");
+  Serial.println(valueY); 
+  */
  }
