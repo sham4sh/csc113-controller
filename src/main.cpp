@@ -3,6 +3,8 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 
+using namespace std;
+
 
 // Update these with values suitable for your network.
 const char* ssid = "iPhone";
@@ -17,11 +19,11 @@ const char* mqtt_server = "test.mosquitto.org";
 #define MQTT_VELOCITY "csc113/controller/vel"
 #define MQTT_STEER "csc113/controller/st"
 
-#define VRX_PIN  36 // ESP32 pin GPIO36 (ADC0) connected to VRX pin
-#define VRY_PIN  39 // ESP32 pin GPIO39 (ADC0) connected to VRY pin
+#define VRX_PIN  39 // ESP32 pin GPIO36 (ADC0) connected to VRX pin
+#define VRY_PIN  36 // ESP32 pin GPIO39 (ADC0) connected to VRY pin
 
-String valueX = ""; // to store the X-axis value
-String valueY = ""; // to store the Y-axis value
+int valueX = 0; // to store the X-axis value
+int valueY = 0; // to store the Y-axis value
 
 WiFiClient wifiClient;
 
@@ -72,12 +74,13 @@ void reconnect() {
 }
 
 void callback(char* topic, byte *payload, unsigned int length) {
+    /**
     Serial.println("-------new message from broker-----");
     Serial.print("channel:");
     Serial.println(topic);
     Serial.print("data:");  
     Serial.write(payload, length);
-    Serial.println();
+    Serial.println(); */
 }
 
 void setup() {
@@ -98,6 +101,24 @@ void publishSerialData(const char *serialData){
 
   client.publish(MQTT_SERIAL_PUBLISH_CH, serialData);
 }
+
+/** Normalize joystick to range (-2048, 2048) and add buffer to zero */
+void normalizeStick(){
+  valueX *= -1;
+  valueY *= - 1;
+
+  valueX += 2048;
+  valueY += 2048;
+
+  if(abs(valueX) < 300){
+    valueX = 0;
+  }
+
+  if(abs(valueY) < 300){
+    valueY = 0;
+  }
+}
+
 void loop() {
   client.loop();
 
@@ -105,15 +126,27 @@ void loop() {
   valueX = analogRead(VRX_PIN);
   valueY = analogRead(VRY_PIN);
 
+  normalizeStick();
 
   if (Serial.available())
   {
     String str = Serial.readStringUntil('\n');
     publishSerialData(str.c_str());
 
-    client.publish(MQTT_STEER, valueX.c_str());
-    client.publish(MQTT_VELOCITY, valueY.c_str());
+    //client.publish(MQTT_STEER, to_string(valueX).c_str());
+    //client.publish(MQTT_VELOCITY, to_string(valueY).c_str());
   }
+  /**
+  if(abs(valueX) < 300){
+    valueX = 0;
+  }
+
+  if(abs(valueY - 2048) < 300){
+    valueY = 0;
+  }
+  */
+  client.publish(MQTT_STEER, to_string(valueX).c_str());
+  client.publish(MQTT_VELOCITY, to_string(valueY).c_str());
 
    // read X and Y analog values
   
