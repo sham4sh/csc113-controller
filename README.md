@@ -6,4 +6,6 @@ https://github.com/mike-ilya/DC_Motor_Test
 
 The system consists of an onboard computer with several attached sensors, communicating with a remote controller via an MQTT server. A joystick is used for control of the motors, and the controller may be put into sleep for manual control via pushbutton.
 
+To view user dashboard, import flows.json to a node-red flow and open localhost:1880/ui
+
 Developed by Joshua Shamash and Michael Ilyajanov.
