@@ -2,6 +2,8 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
+#include <ezButton.h>
+//#include <driver/gpio.h>
 
 using namespace std;
 
@@ -18,13 +20,25 @@ const char* mqtt_server = "test.mosquitto.org";
 
 #define MQTT_DISPLAY "csc113/controller/display"
 
+#define MQTT_PROX "csc113/controller/prox"
+
 #define VRX_PIN  39 // ESP32 pin GPIO36 (ADC0) connected to VRX pin
 #define VRY_PIN  36 // ESP32 pin GPIO39 (ADC0) connected to VRY pin
+#define SW_PIN   33 // ESP32 pin GPIO33 connected to SW  pin
+
+#define BT_PIN   GPIO_NUM_25
+
+#define uS_TO_S_FACTOR 1000000ULL  /* Conversion factor for micro seconds to seconds */
+#define TIME_TO_SLEEP  5        /* Time ESP32 will go to sleep (in seconds) */
+
+ezButton button(SW_PIN);
 
 int valueX = 0; // to store the X-axis value
 int valueY = 0; // to store the Y-axis value
+int bValue = 0; // To store value of the button
 
 int sentDisplays = 0;
+double prox = 0;
 String display[4] = {"", "", "", ""};
 
 WiFiClient wifiClient;
@@ -47,6 +61,8 @@ void setup_wifi() {
     Serial.println("WiFi connected");
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
+
+    
 }
 
 void reconnect() {
@@ -83,6 +99,24 @@ void callback(char* topic, byte* payload, unsigned int length) {
   }
 
   messageDoub = stod(messageTemp.c_str());
+
+  prox = messageDoub;
+}
+
+void print_wakeup_reason(){
+  esp_sleep_wakeup_cause_t wakeup_reason;
+
+  wakeup_reason = esp_sleep_get_wakeup_cause();
+
+  switch(wakeup_reason)
+  {
+    case ESP_SLEEP_WAKEUP_EXT0 : Serial.println("Wakeup caused by external signal using RTC_IO"); break;
+    case ESP_SLEEP_WAKEUP_EXT1 : Serial.println("Wakeup caused by external signal using RTC_CNTL"); break;
+    case ESP_SLEEP_WAKEUP_TIMER : Serial.println("Wakeup caused by timer"); break;
+    case ESP_SLEEP_WAKEUP_TOUCHPAD : Serial.println("Wakeup caused by touchpad"); break;
+    case ESP_SLEEP_WAKEUP_ULP : Serial.println("Wakeup caused by ULP program"); break;
+    default : Serial.printf("Wakeup was not caused by deep sleep: %d\n",wakeup_reason); break;
+  }
 }
 
 void setup() {
@@ -93,6 +127,18 @@ void setup() {
   client.setCallback(callback);
   reconnect();
   Serial.setTimeout(5000);
+
+  //pinMode(21, INPUT);
+
+  print_wakeup_reason();
+  //esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
+  esp_sleep_enable_ext0_wakeup(BT_PIN, HIGH);
+
+  //Serial.println("Going to sleep now");
+  //delay(1000);
+  //esp_deep_sleep_start();
+
+  button.setDebounceTime(50); // set debounce time to 50 milliseconds
 }
 
 /** Normalize joystick to range (-2048, 2048) and add buffer to zero */
@@ -121,17 +167,18 @@ String lineDisplay(int veloc, int leftProx, int rightProx, int pos){
 }
 
 void textDisplay(String curLine){
-  display[0] = "|----------------------------------------|\n";
+  display[0] = "|-----------------------------------------|\n";
   
   display[1] = display[2];
   display[2] = curLine;
 
-  display[3] = "|----------------------------------------|\n";
+  display[3] = "|-----------------------------------------|\n";
 }
+
+
 
 void loop() {
   client.loop();
-
 
   valueX = analogRead(VRX_PIN);
   valueY = analogRead(VRY_PIN);
@@ -141,7 +188,20 @@ void loop() {
   client.publish(MQTT_STEER, to_string(valueX).c_str());
   client.publish(MQTT_VELOCITY, to_string(valueY).c_str());
 
+  //client.publish(MQTT_PROX, to_string(proximity).c_str());
+
   textDisplay(lineDisplay(0, 0, 0, ((valueX / 100) + 21)));
 
   client.publish(MQTT_DISPLAY, (display[0] + display[1] + display[2] + display[3]).c_str());
+
+  button.loop(); // MUST call the loop() function first
+
+  // Read the button value
+  bValue = button.getState();
+
+  if (button.isPressed()) {
+    Serial.println("Going to sleep now");
+    delay(1000);
+    esp_deep_sleep_start();
+  }
  }
