@@ -22,6 +22,8 @@ const char* mqtt_server = "test.mosquitto.org";
 
 #define MQTT_PROX "csc113/controller/prox"
 
+#define MQTT_CTRL "csc113/controller/ctrl"
+
 #define VRX_PIN  39 // ESP32 pin GPIO36 (ADC0) connected to VRX pin
 #define VRY_PIN  36 // ESP32 pin GPIO39 (ADC0) connected to VRY pin
 #define SW_PIN   33 // ESP32 pin GPIO33 connected to SW  pin
@@ -68,6 +70,8 @@ void setup_wifi() {
 void reconnect() {
   // Loop until we're reconnected
   while (!client.connected()) {
+    client.publish(MQTT_CTRL, 0);
+    
     Serial.print("Attempting MQTT connection...");
     // Create a random client ID
     String clientId = "ESP32Client-Shamash-";
@@ -127,8 +131,6 @@ void setup() {
   client.setCallback(callback);
   reconnect();
   Serial.setTimeout(5000);
-
-  //pinMode(21, INPUT);
 
   print_wakeup_reason();
   //esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
@@ -200,8 +202,12 @@ void loop() {
   bValue = button.getState();
 
   if (button.isPressed()) {
+    client.publish(MQTT_CTRL, 0);
+    client.publish(MQTT_VELOCITY, 0);
     Serial.println("Going to sleep now");
     delay(1000);
     esp_deep_sleep_start();
+  }else{
+    client.publish(MQTT_CTRL, "1");
   }
  }
