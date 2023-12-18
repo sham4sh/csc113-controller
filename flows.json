@@ -1,5 +1,267 @@
 [
     {
+        "id": "2a4895f204005932",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "ad2de56467be1d45",
+        "type": "mqtt in",
+        "z": "2a4895f204005932",
+        "name": "",
+        "topic": "csc113/controller/vel",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "8a646f6dd69a9f56",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 170,
+        "y": 180,
+        "wires": [
+            [
+                "47bcf36b3e66a8f4"
+            ]
+        ]
+    },
+    {
+        "id": "15e2e3fe73dbb0fb",
+        "type": "ui_gauge",
+        "z": "2a4895f204005932",
+        "name": "Speed",
+        "group": "b44607f33f9f441e",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "",
+        "label": "rpm",
+        "format": "{{value}}",
+        "min": "0",
+        "max": "255",
+        "colors": [
+            "#ca3838",
+            "#00e61b",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 570,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "47bcf36b3e66a8f4",
+        "type": "range",
+        "z": "2a4895f204005932",
+        "minin": "0",
+        "maxin": "2048",
+        "minout": "0",
+        "maxout": "255",
+        "action": "scale",
+        "round": true,
+        "property": "payload",
+        "name": "",
+        "x": 400,
+        "y": 120,
+        "wires": [
+            [
+                "15e2e3fe73dbb0fb"
+            ]
+        ]
+    },
+    {
+        "id": "30be733b10f76820",
+        "type": "mqtt in",
+        "z": "2a4895f204005932",
+        "name": "",
+        "topic": "csc113/controller/display",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "8a646f6dd69a9f56",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 130,
+        "y": 280,
+        "wires": [
+            [
+                "946bf89dc0900943"
+            ]
+        ]
+    },
+    {
+        "id": "946bf89dc0900943",
+        "type": "ui_text",
+        "z": "2a4895f204005932",
+        "group": "4c37b9d1f66a0b9e",
+        "order": 2,
+        "width": "6",
+        "height": "6",
+        "name": "DISPLAY",
+        "label": "",
+        "format": "{{msg.payload}}",
+        "layout": "col-center",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 400,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "2950231865cf0e3e",
+        "type": "mqtt in",
+        "z": "2a4895f204005932",
+        "name": "",
+        "topic": "csc113/controller/prox",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "8a646f6dd69a9f56",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 220,
+        "y": 500,
+        "wires": [
+            [
+                "a6c04ce46aa46026"
+            ]
+        ]
+    },
+    {
+        "id": "a6c04ce46aa46026",
+        "type": "ui_gauge",
+        "z": "2a4895f204005932",
+        "name": "",
+        "group": "c46bef2b5cd7a18c",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "gtype": "donut",
+        "title": "",
+        "label": "feet",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "20",
+        "colors": [
+            "#b30000",
+            "#e6e600",
+            "#3ccb3a"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 650,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "8c66d85176e5ce92",
+        "type": "mqtt in",
+        "z": "2a4895f204005932",
+        "name": "",
+        "topic": "csc113/controller/temp",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "8a646f6dd69a9f56",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 120,
+        "y": 400,
+        "wires": [
+            [
+                "5f26defe2b12af0e",
+                "49a9c5a977998fbc"
+            ]
+        ]
+    },
+    {
+        "id": "5f26defe2b12af0e",
+        "type": "ui_chart",
+        "z": "2a4895f204005932",
+        "name": "",
+        "group": "565089108a5012b9",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "label": "",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "120",
+        "removeOlder": "1",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#ff7b00",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 370,
+        "y": 400,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "49a9c5a977998fbc",
+        "type": "ui_gauge",
+        "z": "2a4895f204005932",
+        "name": "",
+        "group": "565089108a5012b9",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "gtype": "donut",
+        "title": "",
+        "label": "degrees",
+        "format": "{{value}}",
+        "min": 0,
+        "max": 10,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 370,
+        "y": 440,
+        "wires": []
+    },
+    {
         "id": "fa48722483ca4976",
         "type": "ui_gauge",
         "z": "2a4895f204005932",
@@ -26,6 +288,102 @@
         "x": 610,
         "y": 540,
         "wires": []
+    },
+    {
+        "id": "5f7c6a73904a89d2",
+        "type": "mqtt in",
+        "z": "2a4895f204005932",
+        "name": "",
+        "topic": "csc113/controller/ctrl",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "8a646f6dd69a9f56",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 270,
+        "y": 560,
+        "wires": [
+            [
+                "fa48722483ca4976"
+            ]
+        ]
+    },
+    {
+        "id": "8a646f6dd69a9f56",
+        "type": "mqtt-broker",
+        "name": "ESP32",
+        "broker": "test.mosquitto.org",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "b44607f33f9f441e",
+        "type": "ui_group",
+        "name": "Speed",
+        "tab": "68f205fc24637c3d",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "4c37b9d1f66a0b9e",
+        "type": "ui_group",
+        "name": "Display",
+        "tab": "68f205fc24637c3d",
+        "order": 3,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "c46bef2b5cd7a18c",
+        "type": "ui_group",
+        "name": "Proximity",
+        "tab": "68f205fc24637c3d",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "565089108a5012b9",
+        "type": "ui_group",
+        "name": "Temperature",
+        "tab": "68f205fc24637c3d",
+        "order": 4,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
     },
     {
         "id": "cc1a4342097a9d09",
